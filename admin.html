@@ -51,6 +51,7 @@
                         <button class="nav-btn" data-tab="chapters">الفصول والمواد</button>
                         <button class="nav-btn" data-tab="team">معلومات الفريق</button>
                         <button class="nav-btn" data-tab="about">عن المنصة</button>
+                        <button class="nav-btn" data-tab="analytics">📊 إحصائيات الزوار</button>
                         <button class="nav-btn" data-tab="settings">الإعدادات</button>
                     </nav>
                 </aside>
@@ -129,6 +130,84 @@
                             </div>
                             <button type="submit" class="save-btn">حفظ التغييرات</button>
                         </form>
+                    </div>
+
+                    <!-- قسم الإحصائيات -->
+                    <div id="analytics-tab" class="tab-content">
+                        <h2>📊 إحصائيات الزوار</h2>
+                        <div class="analytics-dashboard">
+                            <!-- بطاقات الإحصائيات -->
+                            <div class="stats-grid">
+                                <div class="stat-card total-visitors">
+                                    <div class="stat-icon">👥</div>
+                                    <div class="stat-info">
+                                        <div class="stat-number" id="totalVisitors">0</div>
+                                        <div class="stat-label">إجمالي الزوار</div>
+                                    </div>
+                                </div>
+                                <div class="stat-card active-now">
+                                    <div class="stat-icon">🌍</div>
+                                    <div class="stat-info">
+                                        <div class="stat-number" id="countriesCount">0</div>
+                                        <div class="stat-label">دولة</div>
+                                    </div>
+                                </div>
+                                <div class="stat-card popular-pages">
+                                    <div class="stat-icon">📈</div>
+                                    <div class="stat-info">
+                                        <div class="stat-number" id="pagesCount">0</div>
+                                        <div class="stat-label">صفحة</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- أزرار التحكم -->
+                            <div class="analytics-actions">
+                                <button id="refreshStats" class="btn-primary">
+                                    <span>🔄</span> تحديث الإحصائيات
+                                </button>
+                                <button id="resetStats" class="btn-danger">
+                                    <span>🗑️</span> إعادة التعيين
+                                </button>
+                                <button id="exportStats" class="btn-secondary">
+                                    <span>📥</span> تصدير البيانات
+                                </button>
+                            </div>
+
+                            <!-- التفاصيل -->
+                            <div class="stats-details">
+                                <!-- الدول -->
+                                <div class="detail-section">
+                                    <h3>🌍 الدول الأكثر زيارة</h3>
+                                    <div id="countriesList" class="detail-list"></div>
+                                </div>
+
+                                <!-- الصفحات -->
+                                <div class="detail-section">
+                                    <h3>📈 الصفحات الأكثر زيارة</h3>
+                                    <div id="popularPages" class="detail-list"></div>
+                                </div>
+
+                                <!-- معلومات الخادم -->
+                                <div class="detail-section">
+                                    <h3>⚙️ معلومات النظام</h3>
+                                    <div class="system-info">
+                                        <div class="info-item">
+                                            <span>آخر تحديث:</span>
+                                            <span id="lastUpdate">-</span>
+                                        </div>
+                                        <div class="info-item">
+                                            <span>آخر إعادة تعيين:</span>
+                                            <span id="lastReset">-</span>
+                                        </div>
+                                        <div class="info-item">
+                                            <span>وقت الخادم:</span>
+                                            <span id="serverTime">-</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
                     <!-- قسم الإعدادات -->
