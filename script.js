@@ -1457,4 +1457,83 @@ class LegalMindApp {
 // Initialize the application when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
     window.legalMindApp = new LegalMindApp();
+// LegalMind API Service
+class APIService {
+    constructor() {
+        this.baseURL = window.location.hostname === 'localhost' 
+            ? 'http://localhost:3000/api'
+            : '/api'; // استخدام relative path للproduction
+    }
+
+    async getHealth() {
+        try {
+            const response = await fetch(`${this.baseURL}/health`);
+            return await response.json();
+        } catch (error) {
+            console.error('Health check failed:', error);
+            return { status: 'ERROR', error: error.message };
+        }
+    }
+
+    async getWelcomeMessage() {
+        try {
+            const response = await fetch(`${this.baseURL}/message`);
+            return await response.json();
+        } catch (error) {
+            console.error('Failed to get welcome message:', error);
+            return { message: 'مرحباً بكم في منصة LegalMind' };
+        }
+    }
+
+    // يمكن إضافة المزيد من API calls هنا
+}
+
+// تحديث الـ App Class لإضافة APIService
+class LegalMindApp {
+    constructor() {
+        this.isInitialized = false;
+        this.api = new APIService();
+        this.init();
+    }
+
+    async init() {
+        try {
+            this.showLoading();
+
+            // اختبار اتصال الباك-إند
+            const health = await this.api.getHealth();
+            console.log('Backend Health:', health);
+
+            // جلب رسالة الترحيب من الباك-إند
+            const welcomeData = await this.api.getWelcomeMessage();
+            this.updateWelcomeMessage(welcomeData.message);
+
+            // باقي الكود كما هو...
+            legalSystem.initializeSearchIndex();
+            window.navigation = new NavigationSystem();
+            window.searchSystem = new SearchSystem();
+            navigation.loadTheme();
+            this.handleInitialURL();
+            this.setupShareFunctionality();
+            this.setupImageFallbacks();
+            this.hideLoading();
+            this.isInitialized = true;
+
+            console.log('✅ LegalMind initialized successfully with backend');
+            
+        } catch (error) {
+            console.error('❌ Failed to initialize LegalMind:', error);
+            this.showError('فشل في تحميل التطبيق. يرجى تحديث الصفحة.');
+        }
+    }
+
+    updateWelcomeMessage(message) {
+        const welcomeHeader = document.querySelector('.welcome-header h2');
+        if (welcomeHeader) {
+            welcomeHeader.textContent = message;
+        }
+    }
+
+    // باقي الدوال كما هي...
+}
 });
