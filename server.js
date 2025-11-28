@@ -6,10 +6,9 @@ const app = express();
 // Middleware
 app.use(cors());
 app.use(express.json());
-app.use(express.static('public'));
 
-// Serve static files from public directory
-app.use(express.static(path.join(__dirname, 'public')));
+// ✅ خدمة الملفات الثابتة من الجذر مباشرة
+app.use(express.static(__dirname));
 
 // API Routes
 app.get('/api/message', (req, res) => {
@@ -20,7 +19,6 @@ app.get('/api/message', (req, res) => {
     });
 });
 
-// Health check endpoint
 app.get('/api/health', (req, res) => {
     res.json({ 
         status: 'OK', 
@@ -29,21 +27,12 @@ app.get('/api/health', (req, res) => {
     });
 });
 
-// Serve main HTML file for all other routes (SPA support)
+// ✅ خدمة index.html لجميع المسارات (من الجذر)
 app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+    res.sendFile(path.join(__dirname, 'index.html'));
 });
 
-// Error handling middleware
-app.use((err, req, res, next) => {
-    console.error('Error:', err);
-    res.status(500).json({ 
-        error: 'Internal Server Error',
-        message: 'Something went wrong!'
-    });
-});
-
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 10000;
 app.listen(PORT, () => {
     console.log(`✅ LegalMind Server running on port ${PORT}`);
     console.log(`📍 URL: http://localhost:${PORT}`);
