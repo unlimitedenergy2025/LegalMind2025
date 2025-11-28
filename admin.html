@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة تحكم LegalMind</title>
+    <link rel="stylesheet" href="admin.css">
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="admin-container">
+        <!-- شاشة الدخول -->
+        <div id="loginScreen" class="login-screen">
+            <div class="login-form">
+                <div class="login-header">
+                    <h2>لوحة تحكم LegalMind</h2>
+                    <p>النظام الداخلي لمجلس النواب الأردني</p>
+                </div>
+                <form id="loginForm">
+                    <div class="form-group">
+                        <label for="username">اسم المستخدم:</label>
+                        <input type="text" id="username" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="password">كلمة المرور:</label>
+                        <input type="password" id="password" required>
+                    </div>
+                    <button type="submit" class="login-btn">دخول</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- لوحة التحكم الرئيسية -->
+        <div id="dashboard" class="dashboard" style="display: none;">
+            <!-- الهيدر -->
+            <header class="admin-header">
+                <div class="header-content">
+                    <h1>لوحة التحكم - LegalMind</h1>
+                    <div class="header-actions">
+                        <span id="adminName" class="admin-name">مرحباً، Farhan</span>
+                        <button id="logoutBtn" class="logout-btn">تسجيل خروج</button>
+                    </div>
+                </div>
+            </header>
+
+            <!-- القائمة الجانبية -->
+            <div class="admin-layout">
+                <aside class="sidebar-admin">
+                    <nav class="admin-nav">
+                        <button class="nav-btn active" data-tab="hero">نصوص الهيرو</button>
+                        <button class="nav-btn" data-tab="chapters">الفصول والمواد</button>
+                        <button class="nav-btn" data-tab="team">معلومات الفريق</button>
+                        <button class="nav-btn" data-tab="about">عن المنصة</button>
+                        <button class="nav-btn" data-tab="settings">الإعدادات</button>
+                    </nav>
+                </aside>
+
+                <!-- المحتوى الرئيسي -->
+                <main class="admin-main">
+                    <!-- قسم نصوص الهيرو -->
+                    <div id="hero-tab" class="tab-content active">
+                        <h2>تعديل نصوص الصفحة الرئيسية</h2>
+                        <form id="heroForm" class="admin-form">
+                            <div class="form-group">
+                                <label>العنوان الرئيسي:</label>
+                                <input type="text" id="heroTitle" value="النظام الداخلي">
+                            </div>
+                            <div class="form-group">
+                                <label>العنوان الثانوي:</label>
+                                <input type="text" id="heroSubtitle" value="لمجلس النواب الأردني">
+                            </div>
+                            <div class="form-group">
+                                <label>الوصف:</label>
+                                <textarea id="heroDescription">١٤٤٤هـ - ٢٠٢٣م - مع جميع التعديلات</textarea>
+                            </div>
+                            <button type="submit" class="save-btn">حفظ التغييرات</button>
+                        </form>
+                    </div>
+
+                    <!-- قسم الفصول والمواد -->
+                    <div id="chapters-tab" class="tab-content">
+                        <h2>إدارة الفصول والمواد</h2>
+                        <div class="chapters-management">
+                            <div class="section-header">
+                                <h3>الفصول الحالية</h3>
+                                <button id="addChapterBtn" class="add-btn">+ إضافة فصل جديد</button>
+                            </div>
+                            <div id="chaptersList" class="chapters-list">
+                                <!-- الفصول تظهر هنا -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- قسم الفريق -->
+                    <div id="team-tab" class="tab-content">
+                        <h2>معلومات الفريق</h2>
+                        <form id="teamForm" class="admin-form">
+                            <div class="form-group">
+                                <label>اسم العضو الأول:</label>
+                                <input type="text" id="member1Name" value="فرحان الخوالدة">
+                            </div>
+                            <div class="form-group">
+                                <label>دور العضو الأول:</label>
+                                <input type="text" id="member1Role" value="مشارك في مشروع الزمالة البرلمانية">
+                            </div>
+                            <div class="form-group">
+                                <label>اسم العضو الثاني:</label>
+                                <input type="text" id="member2Name" value="سلمى بجق">
+                            </div>
+                            <div class="form-group">
+                                <label>دور العضو الثاني:</label>
+                                <input type="text" id="member2Role" value="مشاركة في مشروع الزمالة البرلمانية">
+                            </div>
+                            <button type="submit" class="save-btn">حفظ التغييرات</button>
+                        </form>
+                    </div>
+
+                    <!-- قسم عن المنصة -->
+                    <div id="about-tab" class="tab-content">
+                        <h2>معلومات عن المنصة</h2>
+                        <form id="aboutForm" class="admin-form">
+                            <div class="form-group">
+                                <label>عنوان القسم:</label>
+                                <input type="text" id="aboutTitle" value="عن منصة LegalMind">
+                            </div>
+                            <div class="form-group">
+                                <label>وصف المنصة:</label>
+                                <textarea id="aboutDescription">منصة LegalMind هي مبادرة رقمية تهدف إلى توفير النظام الداخلي لمجلس النواب الأردني بشكل سهل ومتاح للجميع...</textarea>
+                            </div>
+                            <button type="submit" class="save-btn">حفظ التغييرات</button>
+                        </form>
+                    </div>
+
+                    <!-- قسم الإعدادات -->
+                    <div id="settings-tab" class="tab-content">
+                        <h2>الإعدادات العامة</h2>
+                        <form id="settingsForm" class="admin-form">
+                            <div class="form-group">
+                                <label>اسم الموقع:</label>
+                                <input type="text" id="siteName" value="LegalMind">
+                            </div>
+                            <div class="form-group">
+                                <label>وصف الموقع:</label>
+                                <textarea id="siteDescription">النظام الداخلي لمجلس النواب الأردني</textarea>
+                            </div>
+                            <div class="form-group">
+                                <label>الإصدار:</label>
+                                <input type="text" id="siteVersion" value="الطبعة الحادية عشر">
+                            </div>
+                            <button type="submit" class="save-btn">حفظ الإعدادات</button>
+                        </form>
+                    </div>
+                </main>
+            </div>
+        </div>
+    </div>
+
+    <!-- النوافذ المنبثقة -->
+    <div id="notification" class="notification"></div>
+
+    <script src="admin.js"></script>
+</body>
+</html>
