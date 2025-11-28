@@ -158,5 +158,20 @@
       }
     ],
     "lastUpdated": "2025-11-28T15:00:00.000Z"
+  },
+  
+  "analytics": {
+    "totalVisitors": 0,
+    "activeNow": 0,
+    "visitsByCountry": {},
+    "popularPages": {},
+    "lastReset": "2025-11-28T15:00:00.000Z",
+    "trackingEnabled": true,
+    "settings": {
+      "trackCountries": true,
+      "trackPages": true,
+      "trackReferrers": true,
+      "privacyMode": false
+    }
   }
 }
