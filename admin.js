@@ -105,8 +105,6 @@ class AdminPanel {
     }
 
     checkAuthentication() {
-        // في الواقع، هنا نتحقق من الجلسة أو التوكن
-        // لكن لأغراض العرض، نعرض شاشة الدخول مباشرة
         this.showLoginScreen();
     }
 
@@ -144,7 +142,6 @@ class AdminPanel {
             if (response.ok) {
                 this.currentData = await response.json();
             } else {
-                // إذا لم توجد بيانات، نستخدم البيانات الافتراضية
                 this.currentData = this.getDefaultData();
             }
         } catch (error) {
@@ -172,28 +169,14 @@ class AdminPanel {
             },
             about: {
                 title: "عن منصة LegalMind",
-                description: "منصة LegalMind هي مبادرة رقمية تهدف إلى توفير النظام الداخلي لمجلس النواب الأردني بشكل سهل ومتاح للجميع. تم تطوير المنصة كجزء من مشروع الزمالة البرلمانية بهدف تعزيز الشفافية والوصول إلى المعلومات التشريعية."
+                description: "منصة LegalMind هي مبادرة رقمية تهدف إلى توفير النظام الداخلي لمجلس النواب الأردني بشكل سهل ومتاح للجميع."
             },
             settings: {
                 siteName: "LegalMind",
                 siteDescription: "النظام الداخلي لمجلس النواب الأردني",
                 version: "الطبعة الحادية عشر"
             },
-            chapters: [
-                {
-                    id: "chapter1",
-                    number: 1,
-                    title: "الفصل الأول: افتتاح الدورة العادية",
-                    articles: [
-                        {
-                            id: "article1",
-                            number: 1,
-                            title: "المادة 1",
-                            content: "يسمى هذا النظام (النظام الداخلي لمجلس النواب لسنة 2013) ويعمل به من تاريخ نشره في الجريدة الرسمية."
-                        }
-                    ]
-                }
-            ]
+            chapters: []
         };
     }
 
@@ -281,7 +264,6 @@ class AdminPanel {
                 throw new Error('Failed to save data');
             }
 
-            // تحديث الموقع الرئيسي إذا كان متاحاً
             this.updateMainSite();
         } catch (error) {
             console.error('Error saving data:', error);
@@ -290,7 +272,6 @@ class AdminPanel {
     }
 
     updateMainSite() {
-        // إرسال إشعار لتحديث الموقع الرئيسي
         if (window.parent && window.parent.navigation) {
             window.parent.navigation.showNotification('تم تحديث المحتوى', 'success');
         }
@@ -344,7 +325,6 @@ class AdminPanel {
     }
 
     editChapter(chapterId) {
-        // هنا يمكن إضافة نافذة تعديل الفصل
         this.showNotification('ميزة تعديل الفصل قيد التطوير', 'info');
     }
 
@@ -359,28 +339,33 @@ class AdminPanel {
     }
 
     // ⬇️⬇️⬇️ نظام الإحصائيات الجديد ⬇️⬇️⬇️
-
-    setupAnalytics: function() {
+    setupAnalytics() {
         // أحداث الأزرار
-        document.getElementById('refreshStats').addEventListener('click', () => {
-            this.loadAnalytics();
-        });
+        const refreshBtn = document.getElementById('refreshStats');
+        const resetBtn = document.getElementById('resetStats');
+        const exportBtn = document.getElementById('exportStats');
 
-        document.getElementById('resetStats').addEventListener('click', () => {
-            this.resetAnalytics();
-        });
+        if (refreshBtn) {
+            refreshBtn.addEventListener('click', () => {
+                this.loadAnalytics();
+            });
+        }
 
-        document.getElementById('exportStats').addEventListener('click', () => {
-            this.exportAnalytics();
-        });
+        if (resetBtn) {
+            resetBtn.addEventListener('click', () => {
+                this.resetAnalytics();
+            });
+        }
 
-        // تحميل الإحصائيات أول مرة
-        this.loadAnalytics();
-    },
+        if (exportBtn) {
+            exportBtn.addEventListener('click', () => {
+                this.exportAnalytics();
+            });
+        }
+    }
 
-    loadAnalytics: async function() {
+    async loadAnalytics() {
         try {
-            // عرض حالة التحميل
             this.setLoadingState(true);
             
             const response = await fetch('/api/analytics/stats');
@@ -396,55 +381,71 @@ class AdminPanel {
             }
         } catch (error) {
             console.error('Error loading analytics:', error);
-            this.showNotification('فشل في تحميل الإحصائيات: ' + error.message, 'error');
+            this.showNotification('فشل في تحميل الإحصائيات', 'error');
         } finally {
             this.setLoadingState(false);
         }
-    },
+    }
 
-    updateAnalyticsUI: function(stats) {
+    updateAnalyticsUI(stats) {
         // تحديث الأرقام الرئيسية
-        document.getElementById('totalVisitors').textContent = stats.totalVisitors.toLocaleString();
-        document.getElementById('countriesCount').textContent = Object.keys(stats.visitsByCountry).length.toLocaleString();
-        document.getElementById('pagesCount').textContent = stats.popularPages.length.toLocaleString();
+        if (document.getElementById('totalVisitors')) {
+            document.getElementById('totalVisitors').textContent = stats.totalVisitors.toLocaleString();
+        }
+        if (document.getElementById('countriesCount')) {
+            document.getElementById('countriesCount').textContent = Object.keys(stats.visitsByCountry || {}).length.toLocaleString();
+        }
+        if (document.getElementById('pagesCount')) {
+            document.getElementById('pagesCount').textContent = (stats.popularPages || []).length.toLocaleString();
+        }
 
         // تحديث قائمة الدول
         const countriesList = document.getElementById('countriesList');
-        countriesList.innerHTML = '';
-        
-        Object.entries(stats.visitsByCountry)
-            .sort((a, b) => b[1] - a[1])
-            .forEach(([country, count]) => {
-                const countryItem = document.createElement('div');
-                countryItem.className = 'country-item';
-                countryItem.innerHTML = `
-                    <span class="country-name">${this.getCountryName(country)}</span>
-                    <span class="country-count">${count.toLocaleString()}</span>
-                `;
-                countriesList.appendChild(countryItem);
-            });
+        if (countriesList) {
+            countriesList.innerHTML = '';
+            
+            Object.entries(stats.visitsByCountry || {})
+                .sort((a, b) => b[1] - a[1])
+                .forEach(([country, count]) => {
+                    const countryItem = document.createElement('div');
+                    countryItem.className = 'country-item';
+                    countryItem.innerHTML = `
+                        <span class="country-name">${this.getCountryName(country)}</span>
+                        <span class="country-count">${count.toLocaleString()}</span>
+                    `;
+                    countriesList.appendChild(countryItem);
+                });
+        }
 
         // تحديث قائمة الصفحات
         const popularPages = document.getElementById('popularPages');
-        popularPages.innerHTML = '';
-        
-        stats.popularPages.forEach(item => {
-            const pageItem = document.createElement('div');
-            pageItem.className = 'page-item';
-            pageItem.innerHTML = `
-                <span class="page-name">${item.page}</span>
-                <span class="page-count">${item.visits.toLocaleString()}</span>
-            `;
-            popularPages.appendChild(pageItem);
-        });
+        if (popularPages) {
+            popularPages.innerHTML = '';
+            
+            (stats.popularPages || []).forEach(item => {
+                const pageItem = document.createElement('div');
+                pageItem.className = 'page-item';
+                pageItem.innerHTML = `
+                    <span class="page-name">${item.page}</span>
+                    <span class="page-count">${item.visits.toLocaleString()}</span>
+                `;
+                popularPages.appendChild(pageItem);
+            });
+        }
 
         // تحديث معلومات النظام
-        document.getElementById('lastUpdate').textContent = new Date().toLocaleString('ar-EG');
-        document.getElementById('lastReset').textContent = new Date(stats.lastReset).toLocaleString('ar-EG');
-        document.getElementById('serverTime').textContent = new Date(stats.serverTime).toLocaleString('ar-EG');
-    },
+        if (document.getElementById('lastUpdate')) {
+            document.getElementById('lastUpdate').textContent = new Date().toLocaleString('ar-EG');
+        }
+        if (document.getElementById('lastReset')) {
+            document.getElementById('lastReset').textContent = new Date(stats.lastReset).toLocaleString('ar-EG');
+        }
+        if (document.getElementById('serverTime')) {
+            document.getElementById('serverTime').textContent = new Date(stats.serverTime).toLocaleString('ar-EG');
+        }
+    }
 
-    getCountryName: function(code) {
+    getCountryName(code) {
         const countryNames = {
             'JO': 'الأردن 🇯🇴',
             'SA': 'السعودية 🇸🇦', 
@@ -463,9 +464,9 @@ class AdminPanel {
         };
         
         return countryNames[code] || `${code} 🌍`;
-    },
+    }
 
-    resetAnalytics: async function() {
+    async resetAnalytics() {
         if (!confirm('هل أنت متأكد من إعادة تعيين جميع الإحصائيات؟ لا يمكن التراجع عن هذا الإجراء.')) {
             return;
         }
@@ -481,19 +482,19 @@ class AdminPanel {
             
             if (data.success) {
                 this.showNotification('تم إعادة تعيين الإحصائيات بنجاح', 'success');
-                this.loadAnalytics(); // إعادة تحميل البيانات
+                this.loadAnalytics();
             }
         } catch (error) {
             console.error('Error resetting analytics:', error);
             this.showNotification('فشل في إعادة تعيين الإحصائيات', 'error');
         }
-    },
+    }
 
-    exportAnalytics: function() {
+    exportAnalytics() {
         this.showNotification('ميزة التصدير قيد التطوير', 'info');
-    },
+    }
 
-    setLoadingState: function(isLoading) {
+    setLoadingState(isLoading) {
         const buttons = ['refreshStats', 'resetStats', 'exportStats'];
         const elements = ['totalVisitors', 'countriesCount', 'pagesCount'];
         
@@ -515,16 +516,18 @@ class AdminPanel {
                 el.classList.toggle('pulse', isLoading);
             }
         });
-    },
+    }
 
     showNotification(message, type = 'info') {
         const notification = document.getElementById('notification');
-        notification.textContent = message;
-        notification.className = `notification ${type} show`;
-        
-        setTimeout(() => {
-            notification.classList.remove('show');
-        }, 3000);
+        if (notification) {
+            notification.textContent = message;
+            notification.className = `notification ${type} show`;
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
     }
 }
 
