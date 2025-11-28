@@ -9,6 +9,36 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static(__dirname));
 
+// ⬇️⬇️⬇️ نظام تتبع الزوار الجديد ⬇️⬇️⬇️
+
+const visitorStats = {
+    totalVisitors: 0,
+    activeNow: 0,
+    visitsByCountry: {},
+    popularPages: {},
+    lastReset: new Date().toISOString()
+};
+
+// Middleware لتتبع كل زائر
+app.use((req, res, next) => {
+    // تجاهل طلبات الـAPI والإدمن في الإحصائيات
+    if (!req.path.startsWith('/api') && !req.path.startsWith('/admin')) {
+        visitorStats.totalVisitors++;
+        
+        const page = req.path === '/' ? 'الصفحة الرئيسية' : req.path;
+        visitorStats.popularPages[page] = (visitorStats.popularPages[page] || 0) + 1;
+        
+        // تتبع البلد (مبسط)
+        const country = req.headers['cf-ipcountry'] || req.headers['x-country'] || 'غير معروف';
+        visitorStats.visitsByCountry[country] = (visitorStats.visitsByCountry[country] || 0) + 1;
+        
+        console.log(`👤 زائر جديد: ${page} | البلد: ${country} | الإجمالي: ${visitorStats.totalVisitors}`);
+    }
+    next();
+});
+
+// ⬆️⬆️⬆️ نهاية نظام الزوار ⬆️⬆️⬆️
+
 // تحميل البيانات من ملف JSON
 function loadData() {
     try {
@@ -49,9 +79,47 @@ app.get('/api/health', (req, res) => {
     res.json({ 
         status: 'OK', 
         timestamp: new Date().toISOString(),
-        service: 'LegalMind Backend'
+        service: 'LegalMind Backend',
+        visitors: visitorStats.totalVisitors
     });
 });
+
+// ⬇️⬇️⬇️ API الإحصائيات الجديد ⬇️⬇️⬇️
+
+// API لإحصائيات الزوار
+app.get('/api/analytics/stats', (req, res) => {
+    res.json({
+        success: true,
+        data: {
+            totalVisitors: visitorStats.totalVisitors,
+            activeNow: visitorStats.activeNow,
+            visitsByCountry: visitorStats.visitsByCountry,
+            popularPages: Object.entries(visitorStats.popularPages)
+                .sort((a, b) => b[1] - a[1])
+                .slice(0, 10)
+                .map(([page, visits]) => ({ page, visits })),
+            lastReset: visitorStats.lastReset,
+            serverTime: new Date().toISOString()
+        }
+    });
+});
+
+// API لإعادة تعيين الإحصائيات (للوحة التحكم)
+app.post('/api/analytics/reset', (req, res) => {
+    visitorStats.totalVisitors = 0;
+    visitorStats.activeNow = 0;
+    visitorStats.visitsByCountry = {};
+    visitorStats.popularPages = {};
+    visitorStats.lastReset = new Date().toISOString();
+    
+    res.json({ 
+        success: true, 
+        message: 'تم إعادة تعيين الإحصائيات بنجاح',
+        lastReset: visitorStats.lastReset
+    });
+});
+
+// ⬆️⬆️⬆️ نهاية API الإحصائيات ⬆️⬆️⬆️
 
 // API لإدارة البيانات
 app.get('/api/admin/data', (req, res) => {
@@ -139,4 +207,6 @@ app.listen(PORT, () => {
     console.log(`📍 الموقع الرئيسي: http://localhost:${PORT}`);
     console.log(`📍 لوحة التحكم: http://localhost:${PORT}/admin`);
     console.log(`📍 API Health: http://localhost:${PORT}/api/health`);
+    console.log(`📍 API Analytics: http://localhost:${PORT}/api/analytics/stats`);
+    console.log(`📊 نظام تتبع الزوار مفعل - جاهز لتسجيل الإحصائيات`);
 });
