@@ -59,6 +59,9 @@ class AdminPanel {
         document.getElementById('addChapterBtn').addEventListener('click', () => {
             this.addNewChapter();
         });
+
+        // ⬇️⬇️⬇️ إضافة نظام الإحصائيات ⬇️⬇️⬇️
+        this.setupAnalytics();
     }
 
     handleLogin() {
@@ -127,6 +130,11 @@ class AdminPanel {
         // إذا كان قسم الفصول، نحدث القائمة
         if (tabName === 'chapters') {
             this.loadChaptersList();
+        }
+        
+        // إذا كان قسم الإحصائيات، نحدث البيانات
+        if (tabName === 'analytics') {
+            this.loadAnalytics();
         }
     }
 
@@ -349,6 +357,165 @@ class AdminPanel {
             });
         }
     }
+
+    // ⬇️⬇️⬇️ نظام الإحصائيات الجديد ⬇️⬇️⬇️
+
+    setupAnalytics: function() {
+        // أحداث الأزرار
+        document.getElementById('refreshStats').addEventListener('click', () => {
+            this.loadAnalytics();
+        });
+
+        document.getElementById('resetStats').addEventListener('click', () => {
+            this.resetAnalytics();
+        });
+
+        document.getElementById('exportStats').addEventListener('click', () => {
+            this.exportAnalytics();
+        });
+
+        // تحميل الإحصائيات أول مرة
+        this.loadAnalytics();
+    },
+
+    loadAnalytics: async function() {
+        try {
+            // عرض حالة التحميل
+            this.setLoadingState(true);
+            
+            const response = await fetch('/api/analytics/stats');
+            if (!response.ok) throw new Error('فشل في جلب الإحصائيات');
+            
+            const data = await response.json();
+            
+            if (data.success) {
+                this.updateAnalyticsUI(data.data);
+                this.showNotification('تم تحديث الإحصائيات بنجاح', 'success');
+            } else {
+                throw new Error(data.message || 'خطأ في البيانات');
+            }
+        } catch (error) {
+            console.error('Error loading analytics:', error);
+            this.showNotification('فشل في تحميل الإحصائيات: ' + error.message, 'error');
+        } finally {
+            this.setLoadingState(false);
+        }
+    },
+
+    updateAnalyticsUI: function(stats) {
+        // تحديث الأرقام الرئيسية
+        document.getElementById('totalVisitors').textContent = stats.totalVisitors.toLocaleString();
+        document.getElementById('countriesCount').textContent = Object.keys(stats.visitsByCountry).length.toLocaleString();
+        document.getElementById('pagesCount').textContent = stats.popularPages.length.toLocaleString();
+
+        // تحديث قائمة الدول
+        const countriesList = document.getElementById('countriesList');
+        countriesList.innerHTML = '';
+        
+        Object.entries(stats.visitsByCountry)
+            .sort((a, b) => b[1] - a[1])
+            .forEach(([country, count]) => {
+                const countryItem = document.createElement('div');
+                countryItem.className = 'country-item';
+                countryItem.innerHTML = `
+                    <span class="country-name">${this.getCountryName(country)}</span>
+                    <span class="country-count">${count.toLocaleString()}</span>
+                `;
+                countriesList.appendChild(countryItem);
+            });
+
+        // تحديث قائمة الصفحات
+        const popularPages = document.getElementById('popularPages');
+        popularPages.innerHTML = '';
+        
+        stats.popularPages.forEach(item => {
+            const pageItem = document.createElement('div');
+            pageItem.className = 'page-item';
+            pageItem.innerHTML = `
+                <span class="page-name">${item.page}</span>
+                <span class="page-count">${item.visits.toLocaleString()}</span>
+            `;
+            popularPages.appendChild(pageItem);
+        });
+
+        // تحديث معلومات النظام
+        document.getElementById('lastUpdate').textContent = new Date().toLocaleString('ar-EG');
+        document.getElementById('lastReset').textContent = new Date(stats.lastReset).toLocaleString('ar-EG');
+        document.getElementById('serverTime').textContent = new Date(stats.serverTime).toLocaleString('ar-EG');
+    },
+
+    getCountryName: function(code) {
+        const countryNames = {
+            'JO': 'الأردن 🇯🇴',
+            'SA': 'السعودية 🇸🇦', 
+            'EG': 'مصر 🇪🇬',
+            'AE': 'الإمارات 🇦🇪',
+            'QA': 'قطر 🇶🇦',
+            'KW': 'الكويت 🇰🇼',
+            'BH': 'البحرين 🇧🇭',
+            'OM': 'عمان 🇴🇲',
+            'LB': 'لبنان 🇱🇧',
+            'PS': 'فلسطين 🇵🇸',
+            'SY': 'سوريا 🇸🇾',
+            'IQ': 'العراق 🇮🇶',
+            'YE': 'اليمن 🇾🇪',
+            'غير معروف': 'غير معروف 🌍'
+        };
+        
+        return countryNames[code] || `${code} 🌍`;
+    },
+
+    resetAnalytics: async function() {
+        if (!confirm('هل أنت متأكد من إعادة تعيين جميع الإحصائيات؟ لا يمكن التراجع عن هذا الإجراء.')) {
+            return;
+        }
+
+        try {
+            const response = await fetch('/api/analytics/reset', {
+                method: 'POST'
+            });
+            
+            if (!response.ok) throw new Error('فشل في إعادة التعيين');
+            
+            const data = await response.json();
+            
+            if (data.success) {
+                this.showNotification('تم إعادة تعيين الإحصائيات بنجاح', 'success');
+                this.loadAnalytics(); // إعادة تحميل البيانات
+            }
+        } catch (error) {
+            console.error('Error resetting analytics:', error);
+            this.showNotification('فشل في إعادة تعيين الإحصائيات', 'error');
+        }
+    },
+
+    exportAnalytics: function() {
+        this.showNotification('ميزة التصدير قيد التطوير', 'info');
+    },
+
+    setLoadingState: function(isLoading) {
+        const buttons = ['refreshStats', 'resetStats', 'exportStats'];
+        const elements = ['totalVisitors', 'countriesCount', 'pagesCount'];
+        
+        buttons.forEach(btnId => {
+            const btn = document.getElementById(btnId);
+            if (btn) {
+                btn.classList.toggle('loading', isLoading);
+                if (isLoading) {
+                    btn.innerHTML = btn.innerHTML.replace('🔄', '⏳');
+                } else {
+                    btn.innerHTML = btn.innerHTML.replace('⏳', '🔄');
+                }
+            }
+        });
+        
+        elements.forEach(elId => {
+            const el = document.getElementById(elId);
+            if (el) {
+                el.classList.toggle('pulse', isLoading);
+            }
+        });
+    },
 
     showNotification(message, type = 'info') {
         const notification = document.getElementById('notification');
