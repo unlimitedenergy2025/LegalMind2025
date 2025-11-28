@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LegalMind - النظام الداخلي لمجلس النواب الأردني</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="responsive.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Loading Spinner -->
+    <div id="loadingSpinner" class="loading-spinner">
+        <div class="spinner-container">
+            <div class="spinner"></div>
+            <p>جاري تحميل النظام الداخلي...</p>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <header class="header" id="header">
+        <nav class="nav-container">
+            <div class="logo">
+                <div class="logo-image">
+                    <img src="images/logo.png" alt="شعار LegalMind" width="40" height="40">
+                </div>
+                <span class="logo-text">LegalMind</span>
+            </div>
+            
+            <div class="nav-controls">
+                <div class="theme-toggle">
+                    <button id="themeToggle" class="theme-btn" aria-label="تبديل الوضع الليلي">
+                        <span class="theme-icon">🌙</span>
+                    </button>
+                </div>
+                
+                <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="قائمة الجوال">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+            </div>
+
+            <ul class="nav-links" id="navLinks">
+                <li><a href="#home" class="nav-link active">الرئيسية</a></li>
+                <li><a href="#chapters" class="nav-link">فصول النظام</a></li>
+                <li><a href="#search" class="nav-link">بحث متقدم</a></li>
+                <li><a href="#team" class="nav-link">الفريق</a></li>
+                <li><a href="#about" class="nav-link">عن المنصة</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero" id="home">
+        <div class="hero-background">
+            <div class="hero-pattern"></div>
+            <div class="hero-overlay"></div>
+            <img src="images/parliament-building.jpg" alt="مبنى مجلس النواب الأردني" class="hero-bg-image">
+        </div>
+        <div class="hero-content">
+            <div class="hero-badge">
+                <span>الطبعة الحادية عشر</span>
+            </div>
+            <h1 class="hero-title">
+                النظام الداخلي
+                <span class="highlight">لمجلس النواب الأردني</span>
+            </h1>
+            <p class="hero-subtitle">١٤٤٤هـ - ٢٠٢٣م - مع جميع التعديلات</p>
+            
+            <div class="hero-search">
+                <div class="search-container">
+                    <input type="text" id="globalSearch" placeholder="ابحث في المواد والفصول..." class="search-input" aria-label="بحث في النظام">
+                    <button class="search-btn" aria-label="بحث">
+                        <span class="search-icon">🔍</span>
+                    </button>
+                </div>
+                <div class="search-suggestions" id="searchSuggestions"></div>
+            </div>
+
+            <div class="hero-stats">
+                <div class="stat-item">
+                    <span class="stat-number" id="chaptersCount">0</span>
+                    <span class="stat-label">فصل</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number" id="articlesCount">0</span>
+                    <span class="stat-label">مادة</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number" id="pagesCount">0</span>
+                    <span class="stat-label">صفحة</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="hero-scroll-indicator">
+            <span>انتقل للأسفل</span>
+            <div class="scroll-arrow"></div>
+        </div>
+    </section>
+
+    <!-- Quick Navigation -->
+    <section class="quick-nav" id="chapters">
+        <div class="container">
+            <div class="section-header">
+                <h2>تنقل سريع</h2>
+                <p>الوصول السريع إلى أهم أجزاء النظام</p>
+            </div>
+            <div class="quick-nav-grid" id="quickNavGrid">
+                <!-- Dynamic quick nav items will be loaded here -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="container">
+            <div class="content-layout">
+                <!-- Sidebar -->
+                <aside class="sidebar" id="sidebar">
+                    <div class="sidebar-header">
+                        <h3>فصول النظام</h3>
+                        <button class="sidebar-toggle" id="sidebarToggle" aria-label="تبديل الشريط الجانبي">
+                            <span>↕</span>
+                        </button>
+                    </div>
+                    <div class="sidebar-content">
+                        <div class="sidebar-search">
+                            <input type="text" placeholder="بحث في الفصول..." class="sidebar-search-input">
+                        </div>
+                        <div class="chapters-tree" id="chaptersTree">
+                            <!-- Dynamic chapters tree -->
+                        </div>
+                    </div>
+                </aside>
+
+                <!-- Content Area -->
+                <section class="content-area">
+                    <div class="content-header">
+                        <div class="breadcrumb" id="breadcrumb">
+                            <a href="#home">الرئيسية</a>
+                        </div>
+                        <div class="content-actions">
+                            <button class="action-btn print-btn" onclick="window.print()" aria-label="طباعة">
+                                <span>🖨️</span> طباعة
+                            </button>
+                            <button class="action-btn share-btn" id="shareBtn" aria-label="مشاركة">
+                                <span>📤</span> مشاركة
+                            </button>
+                            <button class="action-btn bookmark-btn" id="bookmarkBtn" aria-label="إضافة إلى الإشارات المرجعية">
+                                <span>🔖</span> حفظ
+                            </button>
+                        </div>
+                    </div>
+
+                    <article class="legal-content" id="legalContent">
+                        <div class="welcome-message" id="welcomeMessage">
+                            <div class="welcome-header">
+                                <div class="welcome-image">
+                                    <img src="images/parliament-interior.jpg" alt="قاعة مجلس النواب" class="welcome-img">
+                                </div>
+                                <h2>مرحباً بكم في منصة LegalMind</h2>
+                                <p>النظام الداخلي لمجلس النواب الأردني مع جميع التعديلات</p>
+                            </div>
+                            <div class="features-grid">
+                                <div class="feature-card">
+                                    <div class="feature-icon">
+                                        <img src="images/search-icon.png" alt="بحث متقدم" width="48" height="48">
+                                    </div>
+                                    <h3>بحث متقدم</h3>
+                                    <p>ابحث في جميع المواد والفصول باستخدام محرك بحث ذكي</p>
+                                </div>
+                                <div class="feature-card">
+                                    <div class="feature-icon">
+                                        <img src="images/responsive-icon.png" alt="تصميم متجاوب" width="48" height="48">
+                                    </div>
+                                    <h3>تصميم متجاوب</h3>
+                                    <p>استخدم المنصة على جميع الأجهزة بشكل سلس</p>
+                                </div>
+                                <div class="feature-card">
+                                    <div class="feature-icon">
+                                        <img src="images/interactive-icon.png" alt="تفاعلية عالية" width="48" height="48">
+                                    </div>
+                                    <h3>تفاعلية عالية</h3>
+                                    <p>تجربة مستخدم محسنة مع تفاعلات سلسة</p>
+                                </div>
+                                <div class="feature-card">
+                                    <div class="feature-icon">
+                                        <img src="images/dark-mode-icon.png" alt="وضع ليلي" width="48" height="48">
+                                    </div>
+                                    <h3>وضع ليلي</h3>
+                                    <p>استخدم المنصة في الوضع الليلي لحماية عينيك</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="chapter-content" id="chapterContent">
+                            <!-- Dynamic chapter content will be loaded here -->
+                        </div>
+
+                        <div class="search-results" id="searchResults">
+                            <!-- Search results will be displayed here -->
+                        </div>
+                    </article>
+                </section>
+            </div>
+        </div>
+    </main>
+
+    <!-- Team Section -->
+    <section class="team-section" id="team">
+        <div class="container">
+            <div class="section-header">
+                <h2>الفريق المشرف على المنصة</h2>
+                <p>مشاركون في مشروع الزمالة البرلمانية - أحد برامج صندوق الملك عبدالله الثاني</p>
+            </div>
+            <div class="team-grid">
+                <div class="team-card">
+                    <div class="member-avatar">
+                        <img src="images/farhan-avatar.jpg" alt="فرحان الخوالدة" class="member-photo">
+                        <div class="avatar-placeholder">ف</div>
+                    </div>
+                    <div class="member-info">
+                        <h3 class="member-name">فرحان الخوالدة</h3>
+                        <p class="member-role">مشارك في مشروع الزمالة البرلمانية</p>
+                        <div class="member-badge">
+                            <span>صندوق الملك عبدالله الثاني</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="team-card">
+                    <div class="member-avatar">
+                        <img src="images/salma-avatar.jpg" alt="سلمى بجق" class="member-photo">
+                        <div class="avatar-placeholder">س</div>
+                    </div>
+                    <div class="member-info">
+                        <h3 class="member-name">سلمى بجق</h3>
+                        <p class="member-role">مشاركة في مشروع الزمالة البرلمانية</p>
+                        <div class="member-badge">
+                            <span>صندوق الملك عبدالله الثاني</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section class="about-section" id="about">
+        <div class="container">
+            <div class="about-content">
+                <div class="about-text">
+                    <h2>عن منصة LegalMind</h2>
+                    <p>منصة LegalMind هي مبادرة رقمية تهدف إلى توفير النظام الداخلي لمجلس النواب الأردني بشكل سهل ومتاح للجميع. تم تطوير المنصة كجزء من مشروع الزمالة البرلمانية بهدف تعزيز الشفافية والوصول إلى المعلومات التشريعية.</p>
+                    
+                    <div class="about-features">
+                        <div class="about-feature">
+                            <img src="images/innovation-icon.png" alt="الابتكار" width="32" height="32">
+                            <span>الابتكار في تقديم الخدمات ذالبرلمانية</span>
+                        </div>
+                        <div class="about-feature">
+                            <img src="images/accessibility-icon.png" alt="سهولة الوصول" width="32" height="32">
+                            <span>سهولة الوصول إلى المعلومات التشريعية</span>
+                        </div>
+                        <div class="about-feature">
+                            <img src="images/transparency-icon.png" alt="الشفافية" width="32" height="32">
+                            <span>تعزيز الشفافية والمشاركة المجتمعية</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="about-image">
+                    <img src="images/about-platform.jpg" alt="عن المنصة" class="about-img">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <div class="logo">
+                        <div class="logo-image">
+                            <img src="images/logo-white.png" alt="شعار LegalMind" width="40" height="40">
+                        </div>
+                        <span class="logo-text">LegalMind</span>
+                    </div>
+                    <p>منصة النظام الداخلي لمجلس النواب الأردني</p>
+                    <div class="social-links">
+                        <a href="#" aria-label="فيسبوك">
+                            <img src="images/facebook-icon.png" alt="فيسبوك" width="24" height="24">
+                        </a>
+                        <a href="#" aria-label="تويتر">
+                            <img src="images/twitter-icon.png" alt="تويتر" width="24" height="24">
+                        </a>
+                        <a href="#" aria-label="لينكد إن">
+                            <img src="images/linkedin-icon.png" alt="لينكد إن" width="24" height="24">
+                        </a>
+                    </div>
+                </div>
+                <div class="footer-links">
+                    <div class="footer-section">
+                        <h4>روابط سريعة</h4>
+                        <ul>
+                            <li><a href="#home">الرئيسية</a></li>
+                            <li><a href="#chapters">فصول النظام</a></li>
+                            <li><a href="#search">بحث متقدم</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-section">
+                        <h4>المشروع</h4>
+                        <ul>
+                            <li><a href="#team">الفريق</a></li>
+                            <li><a href="#about">عن المنصة</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-section">
+                        <h4>الدعم</h4>
+                        <ul>
+                            <li><a href="#">المساعدة</a></li>
+                            <li><a href="#">الأسئلة الشائعة</a></li>
+                            <li><a href="#">اتصل بنا</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 LegalMind - جميع الحقوق محفوظة</p>
+                <p>مشروع الزمالة البرلمانية - صندوق الملك عبدالله الثاني</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="script.js"></script>
+</body>
+</html>
