@@ -1,314 +1,145 @@
 // LegalMind - النظام الداخلي لمجلس النواب الأردني
-// البيانات الكاملة للنظام الداخلي
+// النظام الجديد مع البيانات الديناميكية من API
 
-const legalSystem = {
-    meta: {
-        title: "النظام الداخلي لمجلس النواب الأردني",
-        edition: "الطبعة الحادية عشر",
-        year: "١٤٤٤هـ - ٢٠٢٣م",
-        totalChapters: 24,
-        totalArticles: 184,
-        totalPages: 99
-    },
-    
-    chapters: [
-        {
-            id: "chapter1",
-            number: 1,
-            title: "الفصل الأول: افتتاح الدورة العادية",
-            articles: [
+// نظام إدارة البيانات الديناميكية
+class DataManager {
+    constructor() {
+        this.siteData = null;
+        this.isDataLoaded = false;
+    }
+
+    async loadSiteData() {
+        try {
+            const response = await fetch('/api/site/data');
+            if (response.ok) {
+                this.siteData = await response.json();
+                this.isDataLoaded = true;
+                console.log('✅ بيانات الموقع تم تحميلها بنجاح');
+                return this.siteData;
+            }
+        } catch (error) {
+            console.error('❌ فشل في تحميل بيانات الموقع:', error);
+        }
+        
+        // Fallback to static data if API fails
+        this.siteData = this.getStaticData();
+        this.isDataLoaded = true;
+        return this.siteData;
+    }
+
+    getStaticData() {
+        return {
+            meta: {
+                title: "النظام الداخلي لمجلس النواب الأردني",
+                edition: "الطبعة الحادية عشر",
+                year: "١٤٤٤هـ - ٢٠٢٣م",
+                totalChapters: 24,
+                totalArticles: 184,
+                totalPages: 99
+            },
+            hero: {
+                title: "النظام الداخلي",
+                subtitle: "لمجلس النواب الأردني",
+                description: "١٤٤٤هـ - ٢٠٢٣م - مع جميع التعديلات",
+                badge: "الطبعة الحادية عشر"
+            },
+            team: {
+                members: [
+                    {
+                        name: "فرحان الخوالدة",
+                        role: "مشارك في مشروع الزمالة البرلمانية",
+                        badge: "صندوق الملك عبدالله الثاني"
+                    },
+                    {
+                        name: "سلمى بجق",
+                        role: "مشاركة في مشروع الزمالة البرلمانية", 
+                        badge: "صندوق الملك عبدالله الثاني"
+                    }
+                ],
+                description: "مشاركون في مشروع الزمالة البرلمانية - أحد برامج صندوق الملك عبدالله الثاني"
+            },
+            about: {
+                title: "عن منصة LegalMind",
+                description: "منصة LegalMind هي مبادرة رقمية تهدف إلى توفير النظام الداخلي لمجلس النواب الأردني بشكل سهل ومتاح للجميع. تم تطوير المنصة كجزء من مشروع الزمالة البرلمانية بهدف تعزيز الشفافية والوصول إلى المعلومات التشريعية."
+            },
+            chapters: [
                 {
-                    id: "article1",
+                    id: "chapter1",
                     number: 1,
-                    title: "المادة 1",
-                    content: `يسمى هذا النظام (النظام الداخلي لمجلس النواب لسنة 2013) ويعمل به من تاريخ نشره في الجريدة الرسمية.`
-                },
-                {
-                    id: "article2", 
-                    number: 2,
-                    title: "المادة 2",
-                    content: `أ. تفتتح الدورة العادية لمجلس الأمة بمقتضى المادة 78 من الدستور بالاستماع إلى خطبة العرش، ثم ينصرف الأعيان والنواب كل إلى مجلسه.
-ب. يبدأ انعقاد المجلس بتلاوة آيات من القرآن الكريم.`
-                },
-                {
-                    id: "article3",
-                    number: 3,
-                    title: "المادة 3",
-                    content: `أ. بعد انصراف النواب إلى مجلسهم، يعقد مجلس النواب جلسته الأولى، ويتولى الرئاسة الأقدم في النيابة فإن تساوى أكثر من نائب في الأقدمية فالنائب الأكثر نيابة بعدد الدورات فإن تساووا فالأكبر سنا بينهم، ويساعده أصغر عضويين حاضرين سنا وإذا تعذر قيام أي منهم بواجبه لسبب من الأسباب يجوز استخلافه بمن يليه سنا، وتنتهي مهمتهم بانتخاب رئيس المجلس.
-ب. يمتنع على من تولى رئاسة الجلسة الافتتاحية من المنصوص عليهم في الفقرة (أ) من هذه المادة الترشح لموقع رئيس مجلس النواب في تلك الدورة.`
-                },
-                {
-                    id: "article4",
-                    number: 4,
-                    title: "المادة 4",
-                    content: `على كل نائب، قبل الشروع في عمله، أن يقسم اليمين أمام المجلس، سندا لأحكام المادة 80 من الدستور، بالنص التالي "أقسم بالله العظيم أن أكون مخلصا للملك والوطن، وأن أحافظ على الدستور وأن أخدم الأمة وأقوم بالواجبات الموكولة إلي حق القيام" على أن أي زيادة أو نقصان أو مخالفة لنص اليمين توجب إعادته.`
-                },
-                {
-                    id: "article5",
-                    number: 5,
-                    title: "المادة 5",
-                    content: `لا يجوز إجراء أي مناقشة أو إصدار أي قرار من المجلس قبل انتخاب رئيسه.`
-                },
-                {
-                    id: "article6",
-                    number: 6,
-                    title: "المادة 6",
-                    content: `بعد انتخاب المكتب الدائم ينتخب المجلس لجنة من أعضائه لوضع صيغة الرد على خطبة العرش وبعد أن يقرها المجلس يرافق أعضاء المجلس الرئيس لرفع الرد إلى الملك وذلك خلال أربعة عشر يوما من إلقاء خطبة العرش.`
+                    title: "الفصل الأول: افتتاح الدورة العادية",
+                    articles: [
+                        {
+                            id: "article1",
+                            number: 1,
+                            title: "المادة 1",
+                            content: "يسمى هذا النظام (النظام الداخلي لمجلس النواب لسنة 2013) ويعمل به من تاريخ نشره في الجريدة الرسمية."
+                        }
+                    ]
                 }
-            ]
-        },
-        {
-            id: "chapter2",
-            number: 2,
-            title: "الفصل الثاني: المكتب الدائم ووظائفه",
-            articles: [
-                {
-                    id: "article7",
-                    number: 7,
-                    title: "المادة 7",
-                    content: `أ. يتألف المكتب الدائم من الرئيس ونائبيه ومساعدين اثنين.
-ب. اذا لم تفز امرأة بموقع الرئيس أو احد موقعي النائب الأول والثاني يقتصر حق الترشح لموقع احد مساعدي الرئيس على المرأة وفق تعليمات يضعها المكتب الدائم لهذه الغاية.
-ج. اذا شغر منصب الرئيس لأي سبب من الأسباب الواردة في الفقرة (3) من المادة (69) من الدستور أو لأي سبب آخر يتولى نائب الرئيس رئاسة المجلس الى حين انتخاب رئيس جديد خلال مدة أسبوعين من تاريخ شغور المنصب واذا كان مجلس النواب غير منعقد يدعى مجلس الأمة الى الانعقاد بدورة استثنائية ينتخب فيها مجلس النواب رئيسا له وتمتد وظيفته الى يوم افتتاح الدورة العادية التالية.
-د. عند شغور موقع احد نواب الرئيس أو المساعدين لأي سبب من الأسباب ينتخب المجلس من يحل محله في أول جلسة يعقدها وتمتد وظيفة المنتخب الى يوم افتتاح الدورة العادية التالية.`
-                },
-                {
-                    id: "article8",
-                    number: 8,
-                    title: "المادة 8",
-                    content: `يتولى رئيس المجلس المهام التالية:
-أ. تمثيل المجلس والتكلم باسمه وطبقا لإرادته.
-ب. مراعاة تطبيق أحكام الدستور والنظام الداخلي في مداولات المجلس وقراراته.
-ج. وضع جدول أعمال كل جلسة من جلسات المجلس.
-د. رئاسة الجلسات، وإعان افتتاحها وانتهائها وضبطها وإدارة النقاش فيها وتحديد موضوع البحث وإعطاء الإذن بالكلام.
-هـ. إعلان قرارات المجلس ومتابعة تنفيذها.
-و. اتخاذ الإجراءات اللازمة لحفظ كرامة المجلس وكرامة أعضائه.
-ز. رئاسة الجهاز الإداري للمجلس.`
-                },
-                {
-                    id: "article9",
-                    number: 9,
-                    title: "المادة 9",
-                    content: `للرئيس حق الاشتراك في مناقشات المجلس، وفي هذه الحالة يتخلى عن كرسي الرئاسة ولا يعود إليه إلا بعد انتهاء النقاش وصدور قرار المجلس في الموضوع مدار البحث.`
-                },
-                {
-                    id: "article10",
-                    number: 10,
-                    title: "المادة 10",
-                    content: `أ. يتولى النائب الأول صلاحيات رئيس المجلس واختصاصاته في حال غيابه أو تعذر قيامه بمهامه أو اشتراكه في مناقشات المجلس أو عند بحث الأسئلة والاستجوابات والاقتراحات التي يقدمها الرئيس باعتباره نائبا في المجلس.
-ب. يتولى النائب الثاني صلاحيات رئيس المجلس واختصاصاته في حال غياب الرئيس ونائبه الأول أو تعذر قيامهما بمهامهما أو اشتراكهما في مناقشات المجلس أو بحث الأسئلة والاستجوابات والاقتراحات التي يقدمانها باعتبارهما نائبين في المجلس.
-ج. إذا تغيب الرئيس ونائباه او تعذر عليهم القيام بمهامهم يتولى رئاسة المجلس النائب الأقدم في النيابة فإن تساوى أكثر من نائب في الأقدمية فالنائب الأكثر نيابة بعدد الدورات فإن تساووا فالأكبر سنا بينهم.`
-                }
-            ]
-        },
-        {
-            id: "chapter7",
-            number: 7,
-            title: "الفصل السابع: لجان المجلس",
-            articles: [
-                {
-                    id: "article38",
-                    number: 38,
-                    title: "المادة 38",
-                    content: `ينتخب المجلس في بدء كل دورة عادية أعضاء اللجان الدائمة التالية:
-أ- اللجنة القانونية.
-ب- اللجنة المالية.
-ج- لجنة الاقتصاد والاستثمار.
-د- لجنة الشؤون الخارجية.
-هـ- اللجنة الإدارية.
-و- لجنة التربية والتعليم.
-ز- لجنة الشباب والرياضة والثقافة.
-ح- لجنة التوجيه الوطني والإعلام.
-ط- لجنة الصحة والغذاء.
-ي- لجنة الزراعة والمياه.
-ك- لجنة البيئة والمناخ.
-ل- لجنة العمل والتنمية الاجتماعية والسكان.
-م- لجنة الطاقة والثروة المعدنية.
-ن- لجنة الخدمات العامة والنقل.
-س- لجنة السياحة والآثار.
-ع- لجنة الاقتصاد الرقمي والريادة.
-ف- لجنة الحريات العامة وحقوق الإنسان.
-ص- لجنة المرأة وشؤون الأسرة.
-ق- لجنة الريف والبادية.
-ر- لجنة فلسطين.`
-                },
-                {
-                    id: "article39",
-                    number: 39,
-                    title: "المادة 39",
-                    content: `تناط باللجنة القانونية المهام التالية:
-أ. دراسة القوانين والاقتراحات بقوانين التي تتعلق بالدستور والانتخاب العام والتشريعات المدنية والجنائية والحقوقية والمحاكم والتنظيم القضائي والاتفاقيات القضائية وقوانين التنفيذ والأحوال الشخصية والجنسية والاستملاك والإيجار والدفاع والعفو عام والمخدرات والمؤثرات النفسية والسير والنقابات، وما في حكم تلك التشريعات، وأي قوانين لا تدخل في اختصاص لجنة أخرى وأي أمور تحال إليها من الرئيس أو المجلس.
-ب. دراسة النظام الداخلي للمجلس واقتراحات تعديله.
-ج. دراسة القضايا التي تتعلق بحصانة النواب.
-د. مساعدة لجان المجلس الأخرى في صياغة النصوص التشريعية.
-هـ. الإشراف على تطبيق مدونة السلوك ودراسة أي مقترحات بشأنها.
-و. النظر في الشكاوى التي تقدم من النواب ضد أي جهة.
-ز. النظر في أي مخالفة لمدونة السلوك.
-ح. النظر في أي تصرف يسيء إلى سمعة المجلس وهيبته وأعضائه سواء أكان تحت القبة أم خارجها.
-ط. دراسة الأمور المتعلقة بالفساد المالي والإداري في المؤسسات الرسمية العامة والمؤسسات العامة ومراقبة اجراءات مكافحة الفساد.`
-                }
-            ]
-        },
-        {
-            id: "chapter11",
-            number: 11,
-            title: "الفصل الحادي عشر: نظام الكلام",
-            articles: [
-                {
-                    id: "article97",
-                    number: 97,
-                    title: "المادة 97",
-                    content: `لا يجوز لأحد أن يتكلم إلا بعد أن يطلب الكلام ويأذن له الرئيس، وإلا فللرئيس أن يمنعه من الكلام ويأمر بعدم إثبات أقواله في محضر الجلسة.`
-                },
-                {
-                    id: "article98",
-                    number: 98,
-                    title: "المادة 98", 
-                    content: `تقتيد طلبات الإذن بالكلام بترتيب تقديمها أو تسجيلها عبر اللوحة الإلكترونية ولا يجوز طلب الكلام في موضوع محال على إحدى اللجان قبل عرضه على جدول أعمال الجلسة.`
-                },
-                {
-                    id: "article99",
-                    number: 99,
-                    title: "المادة 99",
-                    content: `يأذن الرئيس بالكلام لطالبه حسب ترتيب الأسبقية في الطلب المشار إليه في المادة 98 من هذا النظام ويجوز لطالب الكلام التنازل عن دوره لغيره.`
-                },
-                {
-                    id: "article100",
-                    number: 100,
-                    title: "المادة 100",
-                    content: `ليس للرئيس ان يرفض الإذن بالكلام لغير سبب مشروع وعند الخلاف على ذلك يؤخذ رأي المجلس.`
-                }
-            ]
-        },
-        {
-            id: "chapter16", 
-            number: 16,
-            title: "الفصل السادس عشر: الحصانة النيابية",
-            articles: [
-                {
-                    id: "article144",
-                    number: 144,
-                    title: "المادة 144",
-                    content: `لا يجوز خلال دورة انعقاد المجلس ملاحقة العضو جزائياً أو اتخاذ إجراءات جزائية أو إمارة بحقه أو إلقاء القبض عليه أو توقيفه إلا بإذن المجلس، باستثناء حالة الجرم الجنائي المشهود، وفي حالة القبض عليه بهذه الصورة يجب إعـام المجلس بذلك فوراً.`
-                },
-                {
-                    id: "article145",
-                    number: 145,
-                    title: "المادة 145",
-                    content: `يقدم رئيس الوزراء طلب الإذن باتخاذ الإجراءات الجزائية إلى رئيس المجلس، مشفوعا بمذكرة تشتمل على نوع الجرم ومكانه وزمانه والأدلة التي تستلزم اتخاذ إجراءات عاجلة.`
-                },
-                {
-                    id: "article146",
-                    number: 146,
-                    title: "المادة 146", 
-                    content: `يحيل الرئيس الطلب إلى اللجنة القانونية لفحصه والنظر فيه وتقديم تقرير عنه خلال مدة لا تتجاوز خمسة عشر يوماً، فإن لم يقدم التقرير خلال تلك المدة جاز للمجلس البت في الطلب مباشرة.`
-                }
-            ]
-        }
-    ],
+            ],
+            quickNav: [],
+            features: []
+        };
+    }
 
-    // Quick navigation items for important chapters
-    quickNav: [
-        {
-            id: "chapter1",
-            title: "افتتاح الدورة",
-            description: "الإجراءات المتعلقة بافتتاح الدورة العادية للمجلس",
-            icon: "🏛️",
-            articlesCount: 6
-        },
-        {
-            id: "chapter2", 
-            title: "المكتب الدائم",
-            description: "تشكيل واختصاصات المكتب الدائم للمجلس",
-            icon: "👥",
-            articlesCount: 4
-        },
-        {
-            id: "chapter7",
-            title: "لجان المجلس",
-            description: "اللجان الدائمة واختصاصاتها ومهامها",
-            icon: "📋",
-            articlesCount: 20
-        },
-        {
-            id: "chapter11",
-            title: "نظام الكلام", 
-            description: "القواعد المنظمة للكلام والمناقشات في المجلس",
-            icon: "🎤",
-            articlesCount: 24
-        },
-        {
-            id: "chapter16",
-            title: "الحصانة النيابية",
-            description: "أحكام الحصانة النيابية والإجراءات المتعلقة بها",
-            icon: "🛡️",
-            articlesCount: 8
-        }
-    ],
+    getChapters() {
+        return this.siteData?.chapters || [];
+    }
 
-    // Search index for fast searching
-    searchIndex: [],
+    getQuickNav() {
+        return this.siteData?.quickNav || [];
+    }
 
-    // Initialize search index
-    initializeSearchIndex: function() {
-        this.searchIndex = [];
-        this.chapters.forEach(chapter => {
-            chapter.articles.forEach(article => {
-                this.searchIndex.push({
-                    id: article.id,
-                    chapterId: chapter.id,
-                    chapterTitle: chapter.title,
-                    articleNumber: article.number,
-                    articleTitle: article.title,
-                    content: article.content,
-                    searchText: `${article.title} ${article.content} ${chapter.title}`
-                });
-            });
-        });
-    },
+    getHeroData() {
+        return this.siteData?.hero || {};
+    }
 
-    // Get chapter by ID
-    getChapter: function(chapterId) {
-        return this.chapters.find(chapter => chapter.id === chapterId);
-    },
+    getTeamData() {
+        return this.siteData?.team || {};
+    }
 
-    // Get article by ID
-    getArticle: function(articleId) {
-        for (const chapter of this.chapters) {
-            const article = chapter.articles.find(art => art.id === articleId);
-            if (article) return { chapter, article };
-        }
-        return null;
-    },
+    getAboutData() {
+        return this.siteData?.about || {};
+    }
 
-    // Search in content
-    search: function(query) {
-        if (!query.trim()) return [];
+    getMetaData() {
+        return this.siteData?.meta || {};
+    }
+
+    // البحث في المحتوى
+    search(query) {
+        if (!query.trim() || !this.isDataLoaded) return [];
         
         const searchTerms = query.toLowerCase().split(' ').filter(term => term.length > 2);
         if (searchTerms.length === 0) return [];
 
-        return this.searchIndex.filter(item => {
-            const text = item.searchText.toLowerCase();
-            return searchTerms.every(term => text.includes(term));
-        });
-    },
+        const results = [];
+        const chapters = this.getChapters();
 
-    // Get statistics
-    getStatistics: function() {
-        let totalArticles = 0;
-        this.chapters.forEach(chapter => {
-            totalArticles += chapter.articles.length;
+        chapters.forEach(chapter => {
+            chapter.articles.forEach(article => {
+                const searchText = `${article.title} ${article.content} ${chapter.title}`.toLowerCase();
+                if (searchTerms.every(term => searchText.includes(term))) {
+                    results.push({
+                        id: article.id,
+                        chapterId: chapter.id,
+                        chapterTitle: chapter.title,
+                        articleNumber: article.number,
+                        articleTitle: article.title,
+                        content: article.content
+                    });
+                }
+            });
         });
 
-        return {
-            chapters: this.chapters.length,
-            articles: totalArticles,
-            pages: this.meta.totalPages
-        };
+        return results;
     }
-};
+}
 
-// LegalMind Navigation System
+// النظام الأساسي مع البيانات الديناميكية
+const dataManager = new DataManager();
+
+// LegalMind Navigation System - المحدث
 class NavigationSystem {
     constructor() {
         this.currentChapter = null;
@@ -318,18 +149,16 @@ class NavigationSystem {
         this.bookmarks = JSON.parse(localStorage.getItem('legalmind-bookmarks')) || [];
         
         this.initializeNavigation();
-        this.setupEventListeners();
+    }
+
+    async initializeNavigation() {
+        await this.setupEventListeners();
+        this.setupScrollEffects();
+        this.setupBookmarkButton();
         this.updateStatistics();
     }
 
-    initializeNavigation() {
-        this.renderChaptersTree();
-        this.renderQuickNavigation();
-        this.setupScrollEffects();
-        this.setupBookmarkButton();
-    }
-
-    setupEventListeners() {
+    async setupEventListeners() {
         // Mobile menu toggle
         const mobileMenuBtn = document.getElementById('mobileMenuBtn');
         const navLinks = document.getElementById('navLinks');
@@ -392,6 +221,19 @@ class NavigationSystem {
                 this.filterChapters(e.target.value);
             });
         }
+
+        // Load data and render
+        await this.loadAndRenderData();
+    }
+
+    async loadAndRenderData() {
+        await dataManager.loadSiteData();
+        this.renderChaptersTree();
+        this.renderQuickNavigation();
+        this.updateHeroSection();
+        this.updateTeamSection();
+        this.updateAboutSection();
+        this.updateWelcomeMessage();
     }
 
     filterChapters(query) {
@@ -416,7 +258,8 @@ class NavigationSystem {
 
         chaptersTree.innerHTML = '';
 
-        legalSystem.chapters.forEach(chapter => {
+        const chapters = dataManager.getChapters();
+        chapters.forEach(chapter => {
             const chapterItem = document.createElement('div');
             chapterItem.className = 'chapter-item';
             
@@ -442,8 +285,11 @@ class NavigationSystem {
 
         quickNavGrid.innerHTML = '';
 
-        legalSystem.quickNav.forEach(navItem => {
-            const chapter = legalSystem.getChapter(navItem.id);
+        const quickNav = dataManager.getQuickNav();
+        const chapters = dataManager.getChapters();
+
+        quickNav.forEach(navItem => {
+            const chapter = chapters.find(ch => ch.id === navItem.id);
             if (!chapter) return;
 
             const navElement = document.createElement('div');
@@ -466,6 +312,59 @@ class NavigationSystem {
 
             quickNavGrid.appendChild(navElement);
         });
+    }
+
+    updateHeroSection() {
+        const heroData = dataManager.getHeroData();
+        if (!heroData) return;
+
+        const heroTitle = document.querySelector('.hero-title');
+        const heroSubtitle = document.querySelector('.hero-subtitle');
+        const heroBadge = document.querySelector('.hero-badge');
+
+        if (heroTitle) {
+            heroTitle.innerHTML = `
+                ${heroData.title}
+                <span class="highlight">${heroData.subtitle}</span>
+            `;
+        }
+
+        if (heroSubtitle) {
+            heroSubtitle.textContent = heroData.description;
+        }
+
+        if (heroBadge && heroData.badge) {
+            heroBadge.innerHTML = `<span>${heroData.badge}</span>`;
+        }
+    }
+
+    updateTeamSection() {
+        const teamData = dataManager.getTeamData();
+        if (!teamData || !teamData.members) return;
+
+        // This will be implemented when we update the team section in HTML
+        console.log('Team data loaded:', teamData);
+    }
+
+    updateAboutSection() {
+        const aboutData = dataManager.getAboutData();
+        if (!aboutData) return;
+
+        // This will be implemented when we update the about section in HTML
+        console.log('About data loaded:', aboutData);
+    }
+
+    updateWelcomeMessage() {
+        const welcomeHeader = document.querySelector('.welcome-header h2');
+        const welcomeDescription = document.querySelector('.welcome-header p');
+        
+        if (welcomeHeader) {
+            welcomeHeader.textContent = `مرحباً بكم في منصة ${dataManager.getMetaData().title || 'LegalMind'}`;
+        }
+        
+        if (welcomeDescription) {
+            welcomeDescription.textContent = dataManager.getMetaData().title + ' مع جميع التعديلات';
+        }
     }
 
     setupBookmarkButton() {
@@ -517,7 +416,8 @@ class NavigationSystem {
     }
 
     loadChapter(chapterId) {
-        const chapter = legalSystem.getChapter(chapterId);
+        const chapters = dataManager.getChapters();
+        const chapter = chapters.find(ch => ch.id === chapterId);
         if (!chapter) return;
 
         this.currentChapter = chapter;
@@ -537,18 +437,29 @@ class NavigationSystem {
     }
 
     loadArticle(articleId) {
-        const result = legalSystem.getArticle(articleId);
-        if (!result) return;
+        const chapters = dataManager.getChapters();
+        let foundChapter = null;
+        let foundArticle = null;
 
-        const { chapter, article } = result;
-        this.currentChapter = chapter;
-        this.currentArticle = article;
+        for (const chapter of chapters) {
+            const article = chapter.articles.find(art => art.id === articleId);
+            if (article) {
+                foundChapter = chapter;
+                foundArticle = article;
+                break;
+            }
+        }
+
+        if (!foundChapter || !foundArticle) return;
+
+        this.currentChapter = foundChapter;
+        this.currentArticle = foundArticle;
 
         // Update UI
-        this.updateActiveChapter(chapter.id);
-        this.renderArticleContent(chapter, article);
-        this.updateBreadcrumb(chapter.title, article.title);
-        this.updateURL(chapter.id, articleId);
+        this.updateActiveChapter(foundChapter.id);
+        this.renderArticleContent(foundChapter, foundArticle);
+        this.updateBreadcrumb(foundChapter.title, foundArticle.title);
+        this.updateURL(foundChapter.id, articleId);
 
         // Scroll to content
         this.scrollToContent();
@@ -646,10 +557,10 @@ class NavigationSystem {
                 </div>
                 
                 <div class="article-navigation">
-                    <button class="nav-btn prev-btn" ${!prevArticle ? 'disabled' : ''} onclick="${prevArticle ? `navigation.loadArticle('${prevArticle.id}')` : ''}">
+                    <button class="nav-btn prev-btn" ${!prevArticle ? 'disabled' : ''} onclick="navigation.loadArticle('${prevArticle.id}')">
                         ← المادة السابقة
                     </button>
-                    <button class="nav-btn next-btn" ${!nextArticle ? 'disabled' : ''} onclick="${nextArticle ? `navigation.loadArticle('${nextArticle.id}')` : ''}">
+                    <button class="nav-btn next-btn" ${!nextArticle ? 'disabled' : ''} onclick="navigation.loadArticle('${nextArticle.id}')">
                         المادة التالية →
                     </button>
                 </div>
@@ -658,12 +569,10 @@ class NavigationSystem {
     }
 
     formatArticleContent(content) {
-        // Replace line breaks with paragraphs
         const paragraphs = content.split('\n').filter(p => p.trim());
         let html = '';
         
         paragraphs.forEach(paragraph => {
-            // Check if paragraph starts with letter and dot (like "أ." or "ب.")
             if (/^[أ-ي]\./.test(paragraph.trim())) {
                 html += `<h4>${paragraph.trim()}</h4>`;
             } else {
@@ -675,7 +584,6 @@ class NavigationSystem {
     }
 
     attachArticleEventListeners() {
-        // Add click events for internal article references
         document.querySelectorAll('.article-body').forEach(body => {
             body.addEventListener('click', (e) => {
                 const link = e.target.closest('a[data-article]');
@@ -690,7 +598,9 @@ class NavigationSystem {
 
     getAllArticles() {
         let allArticles = [];
-        legalSystem.chapters.forEach(chapter => {
+        const chapters = dataManager.getChapters();
+        
+        chapters.forEach(chapter => {
             chapter.articles.forEach(article => {
                 allArticles.push({
                     id: article.id,
@@ -794,7 +704,7 @@ class NavigationSystem {
     }
 
     setupScrollEffects() {
-        this.handleScroll(); // Initial call
+        this.handleScroll();
     }
 
     handleScroll() {
@@ -807,7 +717,6 @@ class NavigationSystem {
             }
         }
 
-        // Update active chapter based on scroll position
         this.updateActiveChapterOnScroll();
     }
 
@@ -820,7 +729,7 @@ class NavigationSystem {
         chapters.forEach(chapter => {
             const rect = chapter.getBoundingClientRect();
             if (rect.top <= 150 && rect.bottom >= 150) {
-                currentActive = chapter.id.split('-')[0]; // Get chapter id from article id
+                currentActive = chapter.id.split('-')[0];
             }
         });
 
@@ -835,7 +744,6 @@ class NavigationSystem {
     }
 
     handleResize() {
-        // Adjust sidebar for mobile
         if (window.innerWidth <= 768) {
             this.isSidebarOpen = false;
             const sidebarContent = document.querySelector('.sidebar-content');
@@ -854,7 +762,6 @@ class NavigationSystem {
         document.documentElement.setAttribute('data-theme', newTheme);
         localStorage.setItem('legalmind-theme', newTheme);
         
-        // Update theme button icon
         const themeIcon = document.querySelector('.theme-icon');
         if (themeIcon) {
             themeIcon.textContent = newTheme === 'dark' ? '☀️' : '🌙';
@@ -872,31 +779,28 @@ class NavigationSystem {
     }
 
     updateStatistics() {
-        const stats = legalSystem.getStatistics();
+        const meta = dataManager.getMetaData();
         
         const chaptersCount = document.getElementById('chaptersCount');
         const articlesCount = document.getElementById('articlesCount');
         const pagesCount = document.getElementById('pagesCount');
         
-        if (chaptersCount) chaptersCount.textContent = stats.chapters;
-        if (articlesCount) articlesCount.textContent = stats.articles;
-        if (pagesCount) pagesCount.textContent = stats.pages;
+        if (chaptersCount) chaptersCount.textContent = meta.totalChapters || 0;
+        if (articlesCount) articlesCount.textContent = meta.totalArticles || 0;
+        if (pagesCount) pagesCount.textContent = meta.totalPages || 0;
     }
 
     showNotification(message, type = 'info') {
-        // Remove existing notifications
         document.querySelectorAll('.notification').forEach(notification => {
             notification.remove();
         });
 
-        // Create notification element
         const notification = document.createElement('div');
         notification.className = `notification notification-${type}`;
         notification.textContent = message;
         
         document.body.appendChild(notification);
         
-        // Remove after 3 seconds
         setTimeout(() => {
             if (notification.parentNode) {
                 notification.parentNode.removeChild(notification);
@@ -905,10 +809,9 @@ class NavigationSystem {
     }
 }
 
-// LegalMind Search System
+// LegalMind Search System - المحدث
 class SearchSystem {
     constructor() {
-        this.searchIndex = legalSystem.searchIndex;
         this.currentResults = [];
         this.searchTimeout = null;
         
@@ -923,19 +826,16 @@ class SearchSystem {
     setupSearchEventListeners() {
         const globalSearch = document.getElementById('globalSearch');
         if (globalSearch) {
-            // Real-time search with debouncing
             globalSearch.addEventListener('input', (e) => {
                 this.handleSearchInput(e.target.value);
             });
 
-            // Enter key search
             globalSearch.addEventListener('keypress', (e) => {
                 if (e.key === 'Enter') {
                     this.performSearch(e.target.value);
                 }
             });
 
-            // Clear search on escape
             globalSearch.addEventListener('keydown', (e) => {
                 if (e.key === 'Escape') {
                     this.clearSearch();
@@ -944,18 +844,16 @@ class SearchSystem {
             });
         }
 
-        // Search button
         const searchBtn = document.querySelector('.search-btn');
         if (searchBtn) {
             searchBtn.addEventListener('click', () => {
-                const query = globalSearch.value;
+                const query = document.getElementById('globalSearch').value;
                 this.performSearch(query);
             });
         }
     }
 
     setupGlobalSearch() {
-        // Add search shortcut (Ctrl+K or Cmd+K)
         document.addEventListener('keydown', (e) => {
             if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
                 e.preventDefault();
@@ -969,12 +867,10 @@ class SearchSystem {
     }
 
     handleSearchInput(query) {
-        // Clear previous timeout
         if (this.searchTimeout) {
             clearTimeout(this.searchTimeout);
         }
 
-        // Show/hide suggestions
         const suggestions = document.getElementById('searchSuggestions');
         if (!suggestions) return;
 
@@ -983,7 +879,6 @@ class SearchSystem {
             return;
         }
 
-        // Debounce search
         this.searchTimeout = setTimeout(() => {
             this.showSearchSuggestions(query);
         }, 300);
@@ -993,7 +888,7 @@ class SearchSystem {
         const suggestions = document.getElementById('searchSuggestions');
         if (!suggestions) return;
 
-        const results = this.search(query).slice(0, 5); // Top 5 results
+        const results = dataManager.search(query).slice(0, 5);
         
         if (results.length === 0) {
             suggestions.classList.remove('show');
@@ -1012,7 +907,6 @@ class SearchSystem {
             </div>
         `).join('');
 
-        // Add click events to suggestions
         suggestions.querySelectorAll('.suggestion-item').forEach(item => {
             item.addEventListener('click', () => {
                 const articleId = item.getAttribute('data-article');
@@ -1029,151 +923,15 @@ class SearchSystem {
             return;
         }
 
-        this.currentResults = this.search(query);
+        this.currentResults = dataManager.search(query);
         this.displaySearchResults(query, this.currentResults);
         
-        // Hide suggestions
         const suggestions = document.getElementById('searchSuggestions');
         if (suggestions) {
             suggestions.classList.remove('show');
         }
 
-        // Update URL
         this.updateSearchURL(query);
-    }
-
-    search(query) {
-        if (!query.trim() || query.length < 2) {
-            return [];
-        }
-
-        const searchTerms = query.toLowerCase()
-            .split(' ')
-            .filter(term => term.length > 2)
-            .map(term => this.normalizeText(term));
-
-        if (searchTerms.length === 0) {
-            return [];
-        }
-
-        return this.searchIndex.filter(item => {
-            const searchableText = this.normalizeText(item.searchText);
-            return searchTerms.every(term => searchableText.includes(term));
-        }).sort((a, b) => {
-            // Sort by relevance
-            const aScore = this.calculateRelevance(a, searchTerms);
-            const bScore = this.calculateRelevance(b, searchTerms);
-            return bScore - aScore;
-        });
-    }
-
-    normalizeText(text) {
-        return text
-            .toLowerCase()
-            .normalize('NFD')
-            .replace(/[\u064B-\u065F]/g, '') // Remove Arabic diacritics
-            .replace(/[أإآ]/g, 'ا')
-            .replace(/[ة]/g, 'ه')
-            .replace(/[ى]/g, 'ي');
-    }
-
-    calculateRelevance(item, searchTerms) {
-        let score = 0;
-        const normalizedContent = this.normalizeText(item.searchText);
-
-        searchTerms.forEach(term => {
-            // Higher score for matches in title
-            if (this.normalizeText(item.articleTitle).includes(term)) {
-                score += 10;
-            }
-            
-            // Higher score for matches in chapter title
-            if (this.normalizeText(item.chapterTitle).includes(term)) {
-                score += 5;
-            }
-            
-            // Score for content matches
-            const contentMatches = (normalizedContent.match(new RegExp(term, 'g')) || []).length;
-            score += contentMatches;
-            
-            // Bonus for exact article number match
-            if (term === item.articleNumber.toString()) {
-                score += 20;
-            }
-        });
-
-        return score;
-    }
-
-    displaySearchResults(query, results) {
-        const welcomeMessage = document.getElementById('welcomeMessage');
-        const chapterContent = document.getElementById('chapterContent');
-        const searchResults = document.getElementById('searchResults');
-
-        // Hide other sections
-        if (welcomeMessage) welcomeMessage.style.display = 'none';
-        if (chapterContent) chapterContent.style.display = 'none';
-
-        // Show search results
-        if (searchResults) {
-            searchResults.style.display = 'block';
-            searchResults.innerHTML = this.generateSearchResultsHTML(query, results);
-        }
-
-        // Update breadcrumb
-        navigation.updateBreadcrumb(`نتائج البحث: "${query}"`);
-
-        // Scroll to results
-        searchResults.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
-
-    generateSearchResultsHTML(query, results) {
-        if (results.length === 0) {
-            return `
-                <div class="search-results-header">
-                    <h2>لا توجد نتائج</h2>
-                    <p>لم نتمكن من العثور على أي نتائج لبحثك عن: "${query}"</p>
-                </div>
-                <div class="search-suggestions-help">
-                    <h3>اقتراحات للبحث:</h3>
-                    <ul>
-                        <li>تأكد من صحة الكلمات المفتاحية</li>
-                        <li>جرب استخدام كلمات بحثية أكثر عمومية</li>
-                        <li>ابحث برقم المادة (مثال: 144)</li>
-                        <li>ابحث باسم الفصل (مثال: الحصانة النيابية)</li>
-                    </ul>
-                </div>
-            `;
-        }
-
-        let html = `
-            <div class="search-results-header">
-                <h2>نتائج البحث</h2>
-                <p>عثرنا على ${results.length} نتيجة لبحثك عن: "${query}"</p>
-            </div>
-            <div class="search-results-list">
-        `;
-
-        results.forEach(result => {
-            html += `
-                <div class="search-result-item" data-article="${result.id}">
-                    <h4>
-                        <span class="article-number">${result.articleNumber}</span>
-                        ${this.highlightText(result.articleTitle, query)}
-                        <span class="result-chapter">${result.chapterTitle}</span>
-                    </h4>
-                    <div class="result-content">
-                        ${this.highlightText(this.getPreview(result.content, query), query)}
-                    </div>
-                    <button class="view-article-btn" onclick="searchSystem.viewSearchResult('${result.id}')">
-                        عرض المادة كاملة
-                    </button>
-                </div>
-            `;
-        });
-
-        html += `</div>`;
-        return html;
     }
 
     getPreview(content, query, maxLength = 200) {
@@ -1181,7 +939,6 @@ class SearchSystem {
         const normalizedQuery = this.normalizeText(query);
         const queryTerms = normalizedQuery.split(' ').filter(term => term.length > 2);
 
-        // Find the best match position
         let bestPosition = -1;
         let bestTerm = '';
 
@@ -1194,16 +951,13 @@ class SearchSystem {
         }
 
         if (bestPosition === -1) {
-            // No direct match, return beginning of content
             return content.substring(0, maxLength) + (content.length > maxLength ? '...' : '');
         }
 
-        // Extract context around the match
         const start = Math.max(0, bestPosition - 50);
         const end = Math.min(content.length, start + maxLength);
         let preview = content.substring(start, end);
 
-        // Add ellipsis if needed
         if (start > 0) preview = '...' + preview;
         if (end < content.length) preview = preview + '...';
 
@@ -1222,6 +976,16 @@ class SearchSystem {
         });
 
         return highlightedText;
+    }
+
+    normalizeText(text) {
+        return text
+            .toLowerCase()
+            .normalize('NFD')
+            .replace(/[\u064B-\u065F]/g, '')
+            .replace(/[أإآ]/g, 'ا')
+            .replace(/[ة]/g, 'ه')
+            .replace(/[ى]/g, 'ي');
     }
 
     escapeRegex(string) {
@@ -1249,7 +1013,6 @@ class SearchSystem {
 
         this.currentResults = [];
 
-        // Show welcome message or current content
         if (!navigation.currentChapter) {
             navigation.goHome();
         } else if (navigation.currentArticle) {
@@ -1273,7 +1036,7 @@ class SearchSystem {
     }
 }
 
-// LegalMind Main Application
+// LegalMind Main Application - المحدث
 class LegalMindApp {
     constructor() {
         this.isInitialized = false;
@@ -1282,11 +1045,7 @@ class LegalMindApp {
 
     async init() {
         try {
-            // Show loading spinner
             this.showLoading();
-
-            // Initialize legal system
-            legalSystem.initializeSearchIndex();
 
             // Initialize components
             window.navigation = new NavigationSystem();
@@ -1304,13 +1063,10 @@ class LegalMindApp {
             // Setup images fallback
             this.setupImageFallbacks();
 
-            // Hide loading spinner
             this.hideLoading();
-
-            // Mark as initialized
             this.isInitialized = true;
 
-            console.log('✅ LegalMind initialized successfully');
+            console.log('✅ LegalMind initialized successfully with dynamic data');
             
         } catch (error) {
             console.error('❌ Failed to initialize LegalMind:', error);
@@ -1319,10 +1075,8 @@ class LegalMindApp {
     }
 
     setupImageFallbacks() {
-        // Add error handlers for images
         document.querySelectorAll('img').forEach(img => {
             img.addEventListener('error', () => {
-                // Replace with placeholder or hide
                 const placeholder = img.closest('.feature-icon, .member-avatar, .logo-image');
                 if (placeholder) {
                     placeholder.innerHTML = '<div class="image-placeholder">📄</div>';
@@ -1344,7 +1098,6 @@ class LegalMindApp {
             return;
         }
 
-        // Handle chapter/article URLs
         const parts = hash.split('-');
         const chapterId = parts[0];
         const articleId = parts[1];
@@ -1363,7 +1116,6 @@ class LegalMindApp {
                 this.shareContent();
             });
         } else if (shareBtn) {
-            // Fallback for browsers that don't support Web Share API
             shareBtn.addEventListener('click', () => {
                 this.copyToClipboard(window.location.href);
             });
@@ -1380,7 +1132,6 @@ class LegalMindApp {
         try {
             await navigator.share(shareData);
         } catch (error) {
-            // Fallback: copy to clipboard
             this.copyToClipboard(window.location.href);
         }
     }
@@ -1390,7 +1141,6 @@ class LegalMindApp {
             await navigator.clipboard.writeText(text);
             navigation.showNotification('تم نسخ الرابط إلى الحافظة', 'success');
         } catch (error) {
-            // Fallback for older browsers
             const textArea = document.createElement('textarea');
             textArea.value = text;
             document.body.appendChild(textArea);
@@ -1416,7 +1166,6 @@ class LegalMindApp {
     }
 
     showError(message) {
-        // Create error overlay
         const errorOverlay = document.createElement('div');
         errorOverlay.style.cssText = `
             position: fixed;
